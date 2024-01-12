@@ -5,12 +5,12 @@ from youtube_upload import (
     upload_multiple_videos
 )
 
-# under windows these are saved in C:/Users/<user>/AppData/Roaming/Mozilla/Firefox/Profiles/
+# in windows firefox profiles are saved at C:/Users/\<user\>/AppData/Roaming/Mozilla/Firefox/Profiles/
 firefox_profile_path = "path_to_firefox_profile"
 
 videos: list[Video] = [
-    Video("title0", "description0", "thumbnail_file_path0", "video_file_path0"),
-    Video("title1", "description1", "thumbnail_file_path1", "video_file_path1"),
+    Video("title0", "description0", "thumbnail_file_path0", "video_file_path0", ["tag0", "tag1"], "en"),
+    Video("title1", "description1", "thumbnail_file_path1", "video_file_path1", language="de-DE"),
     Video("title2", "description2", "thumbnail_file_path2", "video_file_path2")
 ]
 first_upload_date_time = datetime.datetime.strptime(

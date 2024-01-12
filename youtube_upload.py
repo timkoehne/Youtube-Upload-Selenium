@@ -13,12 +13,16 @@ class Video:
         video_description: str,
         thumbnail_file_path: str,
         video_file_path: str,
+        tags: list[str] = [],
+        language: str = "en",
         upload_date_time: datetime.datetime | None = None,
     ) -> None:
         self.video_title = video_title
         self.video_description = video_description
         self.thumbnail_file_path = thumbnail_file_path
         self.video_file_path = video_file_path
+        self.tags = tags
+        self.language = language
         self.upload_date_time = upload_date_time
 
 
@@ -31,6 +35,8 @@ def upload_single_video(video: Video, firefox_profile_path: str):
         video.video_title,
         video.video_description,
         video.thumbnail_file_path,
+        video.tags,
+        video.language,
         video.upload_date_time,
     )
 
@@ -47,6 +53,8 @@ def upload_multiple_videos(videos: list[Video], firefox_profile_path: str):
             video.video_title,
             video.video_description,
             video.thumbnail_file_path,
+            video.tags,
+            video.language,
             video.upload_date_time,
         )
 
@@ -83,7 +91,9 @@ def _upload_video(
     video_title: str,
     video_description: str,
     thumbnail_file_path: str,
-    upload_date_time: datetime.datetime | None,
+    tags: list[str],
+    language: str,
+    upload_date_time: datetime.datetime | None = None,
 ):
     driver.get("https://www.youtube.com")
     sleep(5)
@@ -127,6 +137,29 @@ def _upload_video(
     # select not-for-kids
     driver.find_element(By.NAME, value="VIDEO_MADE_FOR_KIDS_NOT_MFK").click()
 
+    # show more settings
+    driver.find_element(By.ID, value="toggle-button").click()
+    
+
+    # add tags
+    tags_input = driver.find_element(By.ID, value="tags-container")
+    tags_input = tags_input.find_element(By.ID, value="text-input")
+    tags_input.send_keys(",".join(tags))
+    
+    
+    # language input
+    driver.find_element(By.ID, "language-input").click()
+    language_input = driver.find_elements(By.ID, "paper-list")[-1]
+    langs = language_input.find_elements(By.CLASS_NAME, "selectable-item")
+    lang = langs[0]
+    for l in langs:
+        if l.get_attribute("test-id") == language:
+            lang = l
+            break
+    print(lang.get_attribute("test-id"))
+    lang.click()
+    
+    
     driver.find_element(By.ID, value="next-button").click()
     sleep(1)
     driver.find_element(By.ID, value="next-button").click()
