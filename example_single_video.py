@@ -13,4 +13,4 @@ upload_date_time = datetime.datetime.strptime(
 
 vid = Video("title0", "description0", "thumbnail_file_path0", "video_file_path0", ["tag0", "tag1"], "en", upload_date_time)
 
-upload_single_video(vid, firefox_profile_path)
+upload_single_video(vid, firefox_profile_path, headless=True)
