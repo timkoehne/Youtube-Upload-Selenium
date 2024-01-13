@@ -81,8 +81,6 @@ def _create_Webdriver(firefox_profile_path: str, headless: bool = False) -> WebD
     profile.set_preference("dom.webdriver.enabled", False)
     profile.set_preference("useAutomationExtension", False)
     profile.update_preferences()
-    
-    
 
     options = webdriver.FirefoxOptions()
     options.profile = profile
@@ -91,6 +89,8 @@ def _create_Webdriver(firefox_profile_path: str, headless: bool = False) -> WebD
 
     driver = webdriver.Firefox(options=options)
     driver.implicitly_wait(30)
+    driver.set_window_size(1920, 1080)
+    driver.set_window_position(0, 0)
     return driver
 
 
@@ -108,8 +108,10 @@ def _upload_video(
     sleep(5)
 
     # click upload button
-    upload_button = driver.find_elements(by=By.ID, value="masthead-container")[0]
-    upload_button = upload_button.find_elements(by=By.ID, value="button")[5]
+    upload_button = driver.find_element(by=By.ID, value="buttons")
+    upload_button = upload_button.find_elements(by=By.ID, value="button")
+    print(len(upload_button))
+    upload_button = upload_button[0]
     upload_button.click()
 
     upload_button = driver.find_elements(by=By.ID, value="items")
