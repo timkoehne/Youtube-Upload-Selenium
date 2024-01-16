@@ -6,6 +6,7 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 import html
 
+date_format_template = "%m/%d/%Y"
 
 class Video:
     def __init__(
@@ -89,8 +90,6 @@ def _create_Webdriver(firefox_profile_path: str, headless: bool = False) -> WebD
 
     driver = webdriver.Firefox(options=options)
     driver.implicitly_wait(30)
-    driver.set_window_size(1920, 1080)
-    driver.set_window_position(0, 0)
     return driver
 
 
@@ -104,28 +103,13 @@ def _upload_video(
     language: str,
     upload_date_time: datetime.datetime | None = None,
 ):
-    driver.get("https://www.youtube.com")
-    sleep(5)
-
-    # click upload button
-    upload_button = driver.find_element(by=By.ID, value="buttons")
-    upload_button = upload_button.find_elements(by=By.ID, value="button")
-    print(len(upload_button))
-    upload_button = upload_button[0]
-    upload_button.click()
-
-    upload_button = driver.find_elements(by=By.ID, value="items")
-    # print(len(upload_button))
-    upload_button = upload_button[len(upload_button) - 1]
-    upload_button = upload_button.find_elements(
-        by=By.CSS_SELECTOR, value=".style-scope.yt-multi-page-menu-section-renderer"
-    )[0]
-    upload_button.click()
+    driver.get("https://www.youtube.com/upload")
+    sleep(2)
 
     # upload video file
     file_input = driver.find_element(By.CSS_SELECTOR, "input[type='file']")
     file_input.send_keys(video_file_path)
-    print("uploading video file")
+    print("selecting video file")
     sleep(2)
 
     # input title
@@ -162,7 +146,14 @@ def _upload_video(
     print("entering tags")
 
     # language input
-    driver.find_element(By.ID, "language-input").click()
+    language_input = driver.find_element(By.ID, "language-input")
+    language_input = language_input.find_element(By.XPATH, "*")
+    language_input = language_input.find_element(By.XPATH, "*")
+    language_input = language_input.find_element(By.XPATH, "*")
+    language_input.click()
+    
+    
+    # language_input.click()
     language_input = driver.find_elements(By.ID, "paper-list")[-1]
     langs = language_input.find_elements(By.CLASS_NAME, "selectable-item")
     lang = langs[0]
@@ -181,22 +172,21 @@ def _upload_video(
 
     # select publication date
     if upload_date_time != None:
-        upload_date = upload_date_time.strftime("%d.%m.%Y")
+        upload_date = upload_date_time.strftime(date_format_template)
         upload_time = upload_date_time.strftime("%H:%M")
         driver.find_element(By.ID, value="second-container-expand-button").click()
         driver.find_element(By.ID, value="datepicker-trigger").click()
 
-        dialog = driver.find_elements(By.ID, value="dialog")[6]
-        input = dialog.find_element(By.CSS_SELECTOR, "input")
-        input.clear()
-        input.send_keys(upload_date, "\ue007")
+        dialog = driver.find_elements(By.ID, value="dialog")[-1]
+        input_element = dialog.find_element(By.CSS_SELECTOR, "input")
+        input_element.clear()
+        input_element.send_keys(upload_date, "\ue007")
+        sleep(1)
 
         # select publication time
         inputs = driver.find_elements(By.CSS_SELECTOR, "input")
-        # print(len(inputs))
-
         inputs[2].clear()
-        inputs[2].send_keys(upload_time)
+        inputs[2].send_keys(upload_time, "\ue007")
         print("selected publication date")
 
     else:
